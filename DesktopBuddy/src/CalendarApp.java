@@ -34,7 +34,7 @@ public class CalendarApp extends JFrame {
         JButton nextBtn = createHeaderButton(">");
 
         monthLabel = new JLabel("", SwingConstants.CENTER);
-        monthLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 26));
+        monthLabel.setFont(new Font("mv Boli", Font.BOLD, 26));
         monthLabel.setForeground(Color.WHITE);
 
         prevBtn.addActionListener(e -> changeMonth(-1));
@@ -52,7 +52,7 @@ public class CalendarApp extends JFrame {
         add(calendarPanel, BorderLayout.CENTER);
 
         JButton toggleBtn = new JButton("Toggle Mode");
-        toggleBtn.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        toggleBtn.setFont(new Font("mv Boli", Font.BOLD, 16));
         toggleBtn.setForeground(Color.WHITE);
         toggleBtn.setBackground(new Color(70, 70, 70));
         toggleBtn.setFocusPainted(false);
@@ -69,7 +69,7 @@ public class CalendarApp extends JFrame {
 
     private JButton createHeaderButton(String text) {
         JButton btn = new JButton(text);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        btn.setFont(new Font("mv Boli", Font.BOLD, 20));
         btn.setForeground(Color.WHITE);
         btn.setBackground(new Color(60, 60, 60));
         btn.setFocusPainted(false);
@@ -114,7 +114,7 @@ public class CalendarApp extends JFrame {
 
             dayBtn.setOpaque(true);
             dayBtn.setBorderPainted(false);
-            dayBtn.setFont(new Font("Segoe UI", Font.BOLD, 16));
+            dayBtn.setFont(new Font("mv Boli", Font.BOLD, 16));
             dayBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
             if (date.equals(today)) {
