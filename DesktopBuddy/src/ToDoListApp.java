@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -13,42 +12,37 @@ public class ToDoListApp extends JFrame {
 
     private boolean darkMode = true;
 
-    private Color accent = new Color(100, 149, 237);
-    private Color darkBg = new Color(40, 44, 52);
-    private Color lightBg = new Color(245, 247, 250);
-
     public ToDoListApp() {
         super("To-Do List");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(520, 600);
+        setSize(520, 650);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(15, 15));
 
-        GradientPanel header = new GradientPanel(accent, new Color(72, 118, 255));
+        GradientHeader header = new GradientHeader();
         header.setLayout(new BorderLayout());
         header.setPreferredSize(new Dimension(520, 60));
 
         JLabel title = new JLabel("To-Do List");
-        title.setFont(new Font("Segoe UI Semibold", Font.BOLD, 22));
+        title.setFont(new Font("Poppins", Font.BOLD, 22));
         title.setForeground(Color.WHITE);
         title.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 0));
 
-        JButton themeToggle = makeButton("Change Mode");
+        ModernButton themeToggle = new ModernButton("Toggle Theme");
         themeToggle.setForeground(Color.WHITE);
-        themeToggle.setOpaque(false);
         themeToggle.addActionListener(e -> toggleTheme());
 
         header.add(title, BorderLayout.WEST);
         header.add(themeToggle, BorderLayout.EAST);
-
         add(header, BorderLayout.NORTH);
 
         RoundedPanel mainPanel = new RoundedPanel();
         mainPanel.setLayout(new BorderLayout(15, 15));
-        mainPanel.setOpaque(false);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
+        taskInput.setFont(new Font("Poppins", Font.PLAIN, 18));
+        taskInput.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
         taskInput.setForeground(Color.GRAY);
-        taskInput.setFont(new Font("Segoe UI", Font.PLAIN, 18));
 
         taskInput.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent e) {
@@ -66,15 +60,14 @@ public class ToDoListApp extends JFrame {
             }
         });
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
-        buttonPanel.setOpaque(false);
-
-        JButton addBtn = makeButton("Add Task");
-        JButton removeBtn = makeButton("Remove Task");
+        ModernButton addBtn = new ModernButton("Add Task");
+        ModernButton removeBtn = new ModernButton("Remove Task");
 
         addBtn.addActionListener(e -> addTask());
         removeBtn.addActionListener(e -> removeTask());
 
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+        buttonPanel.setOpaque(false);
         buttonPanel.add(addBtn);
         buttonPanel.add(removeBtn);
 
@@ -85,18 +78,20 @@ public class ToDoListApp extends JFrame {
 
         mainPanel.add(inputPanel, BorderLayout.NORTH);
 
-        taskList.setFont(new Font("Segoe UI", Font.PLAIN, 22));
+        taskList.setFont(new Font("Poppins", Font.PLAIN, 18));
         taskList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        taskList.setFixedCellHeight(40);
 
         JScrollPane scroll = new JScrollPane(taskList);
         scroll.setBorder(BorderFactory.createEmptyBorder());
+        scroll.setOpaque(false);
+        scroll.getViewport().setOpaque(false);
 
         mainPanel.add(scroll, BorderLayout.CENTER);
 
         add(mainPanel, BorderLayout.CENTER);
 
         loadTasks();
-
         applyTheme();
         setVisible(true);
     }
@@ -125,7 +120,7 @@ public class ToDoListApp extends JFrame {
                 pw.println(model.get(i));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error saving tasks.");
         }
     }
 
@@ -137,7 +132,7 @@ public class ToDoListApp extends JFrame {
                     model.addElement(sc.nextLine());
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error loading tasks.");
             }
         }
     }
@@ -148,15 +143,15 @@ public class ToDoListApp extends JFrame {
     }
 
     private void applyTheme() {
-        Color bg = darkMode ? darkBg : lightBg;
+        Color bg = darkMode ? new Color(35, 35, 50) : new Color(245, 247, 250);
         Color fg = darkMode ? Color.WHITE : Color.BLACK;
+        Color inputBg = darkMode ? new Color(60, 63, 70) : Color.WHITE;
 
         getContentPane().setBackground(bg);
         taskList.setBackground(bg);
         taskList.setForeground(fg);
 
-        taskInput.setBackground(darkMode ? new Color(60, 63, 70) : Color.WHITE);
-
+        taskInput.setBackground(inputBg);
         if (taskInput.getText().equals("Write your today's goals")) {
             taskInput.setForeground(Color.GRAY);
         } else {
@@ -166,29 +161,7 @@ public class ToDoListApp extends JFrame {
         repaint();
     }
 
-    private JButton makeButton(String text) {
-        JButton btn = new JButton(text);
-        btn.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        btn.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
-        btn.setBackground(new Color(230, 235, 250));
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.setFocusPainted(false);
-
-        btn.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
-                btn.setBackground(new Color(200, 220, 255));
-            }
-
-            public void mouseExited(MouseEvent e) {
-                btn.setBackground(new Color(230, 235, 250));
-            }
-        });
-
-        return btn;
-    }
-
     class RoundedPanel extends JPanel {
-
         RoundedPanel() {
             setOpaque(false);
         }
@@ -198,32 +171,61 @@ public class ToDoListApp extends JFrame {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             int w = getWidth(), h = getHeight(), arc = 25;
-
-            g2.setColor(new Color(0, 0, 0, 25));
-            g2.fillRoundRect(4, 4, w - 8, h - 8, arc, arc);
+            g2.setColor(new Color(0, 0, 0, 35));
+            g2.fillRoundRect(6, 6, w - 12, h - 12, arc, arc);
 
             g2.setColor(darkMode ? new Color(50, 54, 61) : Color.WHITE);
-            g2.fillRoundRect(0, 0, w - 8, h - 8, arc, arc);
+            g2.fillRoundRect(0, 0, w - 12, h - 12, arc, arc);
 
             g2.dispose();
             super.paintComponent(g);
         }
     }
 
-    class GradientPanel extends JPanel {
-
-        private Color start, end;
-
-        GradientPanel(Color s, Color e) {
-            start = s;
-            end = e;
+    class GradientHeader extends JPanel {
+        GradientHeader() {
             setOpaque(false);
         }
 
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
-            g2.setPaint(new GradientPaint(0, 0, start, getWidth(), getHeight(), end));
-            g2.fillRect(0, 0, getWidth(), getHeight());
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            Color start = darkMode ? new Color(100, 149, 237) : new Color(85, 140, 255);
+            Color end = darkMode ? new Color(72, 118, 255) : new Color(30, 80, 200);
+            g2.setPaint(new GradientPaint(0, 0, start, 0, getHeight(), end));
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
+        }
+    }
+
+    class ModernButton extends JButton {
+        ModernButton(String text) {
+            super(text);
+            setFont(new Font("Poppins", Font.BOLD, 14));
+            setForeground(Color.WHITE);
+            setFocusPainted(false);
+            setBorderPainted(false);
+            setContentAreaFilled(false);
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    setBackground(new Color(255, 255, 255, 50));
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    setBackground(new Color(30, 30, 30, 80));
+                }
+            });
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(new Color(70, 130, 255, 180));
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
             super.paintComponent(g);
         }
     }
